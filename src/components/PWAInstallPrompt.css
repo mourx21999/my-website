@@ -1,0 +1,212 @@
+.pwa-install-prompt {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  z-index: 999;
+  animation: slideUp 0.5s ease-out;
+}
+
+.install-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.install-icon {
+  font-size: 3rem;
+  flex-shrink: 0;
+}
+
+.install-content {
+  flex: 1;
+}
+
+.install-content h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.install-content p {
+  margin: 0;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.ios-instructions {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.ios-instructions p {
+  margin: 0 0 10px 0;
+  font-weight: 500;
+}
+
+.ios-instructions ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.ios-instructions li {
+  margin: 5px 0;
+  line-height: 1.4;
+}
+
+.ios-icon {
+  font-size: 1.1em;
+  color: #007AFF;
+}
+
+.install-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.install-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  min-width: 120px;
+}
+
+.install-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.dismiss-btn {
+  background: rgba(0, 0, 0, 0.1);
+  color: #666;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+}
+
+.dismiss-btn:hover {
+  background: rgba(0, 0, 0, 0.15);
+  color: #333;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .pwa-install-prompt {
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+  }
+  
+  .install-card {
+    padding: 20px;
+    gap: 15px;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .install-icon {
+    font-size: 2.5rem;
+  }
+  
+  .install-content h3 {
+    font-size: 1.1rem;
+  }
+  
+  .install-actions {
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .install-btn,
+  .dismiss-btn {
+    flex: 1;
+    max-width: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .install-card {
+    padding: 18px;
+    border-radius: 15px;
+  }
+  
+  .install-content h3 {
+    font-size: 1rem;
+  }
+  
+  .install-content p,
+  .ios-instructions {
+    font-size: 0.85rem;
+  }
+  
+  .install-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .install-btn,
+  .dismiss-btn {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .install-card {
+    background: rgba(30, 30, 30, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .install-content h3 {
+    color: white;
+  }
+  
+  .install-content p,
+  .ios-instructions {
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .dismiss-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .dismiss-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+  }
+} 
