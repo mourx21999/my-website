@@ -17,8 +17,9 @@ const PORT = process.env.PORT || 5001;
 const allowedOrigins = [
   'http://localhost:3005', 
   'http://localhost:3000',
-  // Add your production domain here when you know it
-  // 'https://your-domain.com'
+  'http://100.115.92.200:5001',
+  // Production domains will be added after deployment
+  /https:\/\/.*\.onrender\.com$/
 ];
 
 app.use(cors({
@@ -173,8 +174,9 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🌐 Network access: http://0.0.0.0:${PORT}`);
   console.log('🔍 Current Status:');
   
   const hfToken = process.env.HUGGING_FACE_TOKEN || process.env.HF_TOKEN;
