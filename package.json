@@ -19,7 +19,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build:prod": "npm run build && cd server && npm install --production",
-    "start:prod": "cd server && NODE_ENV=production npm start"
+    "start:prod": "cd server && NODE_ENV=production npm start",
+    "vercel-build": "react-scripts build"
   },
   "eslintConfig": {
     "extends": [
