@@ -1,0 +1,16 @@
+name: my-website
+services:
+- name: web
+  source_dir: /
+  dockerfile_path: Dockerfile
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 5001
+  environment_slug: node-js
+  routes:
+  - path: /
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: "5001" 
