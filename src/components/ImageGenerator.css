@@ -139,6 +139,23 @@
   box-shadow: none;
 }
 
+/* Dynamic button colors based on expected generation type */
+.generate-btn.ai-mode {
+  background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+}
+
+.generate-btn.ai-mode:hover:not(:disabled) {
+  box-shadow: 0 5px 15px rgba(46, 125, 50, 0.4);
+}
+
+.generate-btn.photo-mode {
+  background: linear-gradient(135deg, #ef6c00 0%, #ff9800 100%);
+}
+
+.generate-btn.photo-mode:hover:not(:disabled) {
+  box-shadow: 0 5px 15px rgba(245, 124, 0, 0.4);
+}
+
 .generated-images {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
@@ -174,9 +191,10 @@
   border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  border: 3px solid transparent;
 }
 
 .image-card:hover {
@@ -186,6 +204,37 @@
 
 .image-card:active {
   transform: translateY(-2px) scale(0.98);
+}
+
+/* Dynamic color themes for different image types */
+.image-card.ai-generated-card {
+  border-color: rgba(46, 125, 50, 0.3);
+  background: linear-gradient(135deg, rgba(232, 245, 233, 0.8), rgba(255, 255, 255, 1));
+}
+
+.image-card.ai-generated-card:hover {
+  border-color: rgba(46, 125, 50, 0.6);
+  box-shadow: 0 10px 30px rgba(46, 125, 50, 0.2);
+}
+
+.image-card.photo-search-card {
+  border-color: rgba(245, 124, 0, 0.3);
+  background: linear-gradient(135deg, rgba(255, 243, 224, 0.8), rgba(255, 255, 255, 1));
+}
+
+.image-card.photo-search-card:hover {
+  border-color: rgba(245, 124, 0, 0.6);
+  box-shadow: 0 10px 30px rgba(245, 124, 0, 0.2);
+}
+
+.image-card.unknown-card {
+  border-color: rgba(123, 31, 162, 0.3);
+  background: linear-gradient(135deg, rgba(243, 229, 245, 0.8), rgba(255, 255, 255, 1));
+}
+
+.image-card.unknown-card:hover {
+  border-color: rgba(123, 31, 162, 0.6);
+  box-shadow: 0 10px 30px rgba(123, 31, 162, 0.2);
 }
 
 .image-container-card {
@@ -278,22 +327,33 @@
   font-size: 0.8rem;
   font-weight: 600;
   width: fit-content;
+  transition: all 0.3s ease;
 }
 
-/* Source badge styling will be handled via JavaScript classes */
+.source-badge:hover {
+  transform: scale(1.05);
+}
+
+/* Enhanced source badge styling with dynamic colors */
 .source-badge.ai-generated {
-  background: #e8f5e8;
-  color: #2d7d32;
+  background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+  color: #2e7d32;
+  border: 1px solid rgba(46, 125, 50, 0.2);
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.15);
 }
 
 .source-badge.photo-search {
-  background: #fff3e0;
-  color: #f57c00;
+  background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+  color: #ef6c00;
+  border: 1px solid rgba(245, 124, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(245, 124, 0, 0.15);
 }
 
 .source-badge.unknown {
-  background: #f3e5f5;
-  color: #7b1fa2;
+  background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+  color: #6a1b9a;
+  border: 1px solid rgba(123, 31, 162, 0.2);
+  box-shadow: 0 2px 8px rgba(123, 31, 162, 0.15);
 }
 
 .source-message {

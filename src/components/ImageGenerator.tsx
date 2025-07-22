@@ -250,6 +250,20 @@ const ImageGenerator: React.FC = () => {
     return `${timeGreeting}, ${userProfile.name}! Ready to create something amazing?`;
   };
 
+  const getButtonClass = () => {
+    // Determine if AI is likely available based on recent generation results
+    const recentImages = generatedImages.slice(-3);
+    const hasRecentAI = recentImages.some(img => img.source === 'hugging-face-ai');
+    const hasRecentPhoto = recentImages.some(img => img.source === 'unsplash-photo');
+    
+    if (hasRecentAI && !hasRecentPhoto) {
+      return 'generate-btn ai-mode';
+    } else if (hasRecentPhoto && !hasRecentAI) {
+      return 'generate-btn photo-mode';
+    }
+    return 'generate-btn';
+  };
+
   return (
     <div className="image-generator">
       {/* Personalized Header */}
@@ -301,7 +315,7 @@ const ImageGenerator: React.FC = () => {
           <button 
             type="submit" 
             disabled={isGenerating || !description.trim()}
-            className="generate-btn"
+            className={getButtonClass()}
           >
             {isGenerating ? 'Generating...' : 'Generate Image'}
           </button>
@@ -317,7 +331,11 @@ const ImageGenerator: React.FC = () => {
         ) : (
           <div className="images-grid">
             {generatedImages.map((image, index) => (
-              <div key={image.id} className="image-card" onClick={() => openImageViewer(index)}>
+              <div 
+                key={image.id} 
+                className={`image-card ${getSourceClass(image.source)}-card`}
+                onClick={() => openImageViewer(index)}
+              >
                 <div className="image-container-card">
                   <img src={image.url} alt={image.description} />
                   <div className="image-overlay">
