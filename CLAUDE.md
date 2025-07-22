@@ -21,6 +21,8 @@ cd server && npm start     # Start API server (http://localhost:5001)
 ```bash
 npm run build:prod         # Build frontend + install server deps
 npm run start:prod         # Start production server on :5001
+./start-app.sh             # Start both frontend and backend simultaneously
+./deploy.sh                # Full deployment preparation script
 ```
 
 ## Architecture Overview
@@ -103,10 +105,11 @@ Configured for multiple origins in `server/index.js`:
 
 ## Development Workflow
 
-1. **Start Development**: Run frontend (`npm start`) and backend (`cd server && npm start`) in separate terminals
-2. **AI Setup**: Add Hugging Face token to `server/.env` for AI generation
-3. **Testing**: Check both AI and photo search modes work correctly
-4. **Production**: Use `npm run build:prod` then `npm run start:prod`
+1. **Quick Start**: Use `./start-app.sh` to launch both frontend and backend simultaneously
+2. **Manual Start**: Run frontend (`npm start`) and backend (`cd server && npm start`) in separate terminals
+3. **AI Setup**: Add Hugging Face token to `server/.env` for AI generation
+4. **Testing**: Check both AI and photo search modes work correctly
+5. **Production**: Use `./deploy.sh` for full deployment preparation, then deploy to platform
 
 ## Key Files to Modify
 
