@@ -9,7 +9,7 @@ interface GeneratedImage {
   url: string;
   description: string;
   timestamp: Date;
-  source: 'hugging-face-ai' | 'unsplash-photo' | 'hugging-face-video' | 'unknown';
+  source: 'hugging-face-ai' | 'unsplash-photo' | 'hugging-face-video' | 'demo-video' | 'unknown';
   message: string;
   type: 'image' | 'video';
 }
@@ -93,7 +93,7 @@ const ImageGenerator: React.FC = () => {
         timestamp: new Date(),
         source: data.source || 'unknown',
         message: data.message || `${generationMode} generated`,
-        type: generationMode
+        type: generationMode // This ensures video mode requests are treated as videos
       };
 
       setGeneratedImages(prev => [...prev, newImage]);
@@ -118,6 +118,8 @@ const ImageGenerator: React.FC = () => {
         return '📸';
       case 'hugging-face-video':
         return '🎬';
+      case 'demo-video':
+        return '🎭';
       default:
         return '❓';
     }
@@ -131,6 +133,8 @@ const ImageGenerator: React.FC = () => {
         return 'Photo Search';
       case 'hugging-face-video':
         return 'AI Video';
+      case 'demo-video':
+        return 'Demo Video';
       default:
         return 'Unknown';
     }
@@ -144,6 +148,8 @@ const ImageGenerator: React.FC = () => {
         return 'photo-search';
       case 'hugging-face-video':
         return 'video-generated';
+      case 'demo-video':
+        return 'demo-video';
       default:
         return 'unknown';
     }

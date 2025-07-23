@@ -6,7 +6,7 @@ interface GeneratedImage {
   url: string;
   description: string;
   timestamp: Date;
-  source: 'hugging-face-ai' | 'unsplash-photo' | 'hugging-face-video' | 'unknown';
+  source: 'hugging-face-ai' | 'unsplash-photo' | 'hugging-face-video' | 'demo-video' | 'unknown';
   message: string;
   type: 'image' | 'video';
 }

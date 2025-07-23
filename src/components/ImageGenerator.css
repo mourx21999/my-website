@@ -285,6 +285,17 @@
   box-shadow: 0 10px 30px rgba(103, 58, 183, 0.2);
 }
 
+/* Demo video color theme */
+.image-card.demo-video-card {
+  border-color: rgba(94, 53, 177, 0.3);
+  background: linear-gradient(135deg, rgba(243, 229, 245, 0.8), rgba(255, 255, 255, 1));
+}
+
+.image-card.demo-video-card:hover {
+  border-color: rgba(94, 53, 177, 0.6);
+  box-shadow: 0 10px 30px rgba(94, 53, 177, 0.2);
+}
+
 .image-container-card {
   position: relative;
   overflow: hidden;
@@ -409,6 +420,13 @@
   color: #673ab7;
   border: 1px solid rgba(103, 58, 183, 0.2);
   box-shadow: 0 2px 8px rgba(103, 58, 183, 0.15);
+}
+
+.source-badge.demo-video {
+  background: linear-gradient(135deg, #f3e5f5, #e8eaf6);
+  color: #5e35b1;
+  border: 1px solid rgba(94, 53, 177, 0.2);
+  box-shadow: 0 2px 8px rgba(94, 53, 177, 0.15);
 }
 
 .source-message {

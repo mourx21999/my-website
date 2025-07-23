@@ -256,28 +256,74 @@ app.post('/generate-video', async (req, res) => {
     console.log('❌ All video services failed, falling back to static image as video preview');
   }
 
-  // Fallback: Generate a static image instead
+  // Fallback: Generate a demo video for demonstration
   try {
-    console.log('🔄 Fallback: Generating static image for video preview...');
-    const searchQuery = encodeURIComponent(prompt.trim());
-    const imageUrl = `https://source.unsplash.com/512x512/?${searchQuery}`;
+    console.log('🔄 Fallback: Using demo video for testing...');
+    
+    // Demo videos that match different prompt themes
+    const demoVideos = [
+      {
+        keywords: ['ocean', 'wave', 'sea', 'water', 'beach', 'coast'],
+        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+        title: 'Ocean Waves Demo'
+      },
+      {
+        keywords: ['city', 'urban', 'street', 'traffic', 'night', 'lights'],
+        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4', 
+        title: 'City Scene Demo'
+      },
+      {
+        keywords: ['nature', 'forest', 'tree', 'leaf', 'green', 'plant'],
+        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4',
+        title: 'Nature Demo'
+      },
+      {
+        keywords: ['fire', 'flame', 'smoke', 'burn'],
+        url: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4',
+        title: 'Fire Demo'
+      }
+    ];
+
+    // Find best matching demo video based on prompt
+    const promptLower = prompt.toLowerCase();
+    let selectedVideo = demoVideos.find(video => 
+      video.keywords.some(keyword => promptLower.includes(keyword))
+    );
+    
+    // Default to first video if no match
+    if (!selectedVideo) {
+      selectedVideo = demoVideos[0];
+    }
     
     const message = hfToken 
-      ? 'Image preview (Video generation temporarily unavailable)'
-      : 'Image preview (Video generation requires Hugging Face token)';
+      ? `Demo video: ${selectedVideo.title} (AI video generation temporarily unavailable)`
+      : `Demo video: ${selectedVideo.title} (AI video generation requires Hugging Face token)`;
     
-    console.log('📸 Returning image preview for video request');
+    console.log(`🎬 Returning demo video: ${selectedVideo.title}`);
     return res.json({ 
-      url: imageUrl, 
-      source: 'unsplash-photo',
+      url: selectedVideo.url, 
+      source: 'demo-video',
       message: message
     });
   } catch (fallbackError) {
-    console.log(`❌ Image fallback failed: ${fallbackError.message}`);
-    return res.status(500).json({ 
-      error: 'Video generation and image fallback failed',
-      details: fallbackError.message
-    });
+    console.log(`❌ Demo video fallback failed: ${fallbackError.message}`);
+    
+    // Final fallback to image
+    try {
+      const searchQuery = encodeURIComponent(prompt.trim());
+      const imageUrl = `https://source.unsplash.com/512x512/?${searchQuery}`;
+      
+      return res.json({ 
+        url: imageUrl, 
+        source: 'unsplash-photo',
+        message: 'Image preview (Video demo unavailable)'
+      });
+    } catch (finalError) {
+      return res.status(500).json({ 
+        error: 'All video generation methods failed',
+        details: finalError.message
+      });
+    }
   }
 });
 
