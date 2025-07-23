@@ -9,8 +9,9 @@ interface GeneratedImage {
   url: string;
   description: string;
   timestamp: Date;
-  source: 'hugging-face-ai' | 'unsplash-photo' | 'unknown';
+  source: 'hugging-face-ai' | 'unsplash-photo' | 'hugging-face-video' | 'unknown';
   message: string;
+  type: 'image' | 'video';
 }
 
 interface UserProfile {
@@ -37,6 +38,7 @@ const ImageGenerator: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [showProfileSetup, setShowProfileSetup] = useState<boolean>(false);
+  const [generationMode, setGenerationMode] = useState<'image' | 'video'>('image');
 
   // Load user profile on component mount
   useEffect(() => {
@@ -66,17 +68,21 @@ const ImageGenerator: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch('/generate-image', {
+      const endpoint = generationMode === 'video' ? '/generate-video' : '/generate-image';
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ prompt: description.trim() })
+        body: JSON.stringify({ 
+          prompt: description.trim(),
+          mode: generationMode
+        })
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate image');
+        throw new Error(errorData.error || `Failed to generate ${generationMode}`);
       }
 
       const data = await response.json();
@@ -86,7 +92,8 @@ const ImageGenerator: React.FC = () => {
         description: description,
         timestamp: new Date(),
         source: data.source || 'unknown',
-        message: data.message || 'Image generated'
+        message: data.message || `${generationMode} generated`,
+        type: generationMode
       };
 
       setGeneratedImages(prev => [...prev, newImage]);
@@ -109,6 +116,8 @@ const ImageGenerator: React.FC = () => {
         return '🤖';
       case 'unsplash-photo':
         return '📸';
+      case 'hugging-face-video':
+        return '🎬';
       default:
         return '❓';
     }
@@ -120,6 +129,8 @@ const ImageGenerator: React.FC = () => {
         return 'AI Generated';
       case 'unsplash-photo':
         return 'Photo Search';
+      case 'hugging-face-video':
+        return 'AI Video';
       default:
         return 'Unknown';
     }
@@ -131,6 +142,8 @@ const ImageGenerator: React.FC = () => {
         return 'ai-generated';
       case 'unsplash-photo':
         return 'photo-search';
+      case 'hugging-face-video':
+        return 'video-generated';
       default:
         return 'unknown';
     }
@@ -292,18 +305,41 @@ const ImageGenerator: React.FC = () => {
           onStyleSuggestion={handleStyleSuggestion}
         />
 
+        {/* Generation Mode Toggle */}
+        <div className="mode-toggle">
+          <button
+            type="button"
+            className={`mode-btn ${generationMode === 'image' ? 'active' : ''}`}
+            onClick={() => setGenerationMode('image')}
+          >
+            🖼️ Images
+          </button>
+          <button
+            type="button"
+            className={`mode-btn ${generationMode === 'video' ? 'active' : ''}`}
+            onClick={() => setGenerationMode('video')}
+          >
+            🎬 Videos
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit}>
           <div className="input-group">
             <label htmlFor="description">
-              {userProfile ? 'What would you like to create today?' : 'Describe the image you want to create:'}
+              {userProfile ? `What ${generationMode} would you like to create today?` : `Describe the ${generationMode} you want to create:`}
             </label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={userProfile 
-                ? `Tell me your vision... I'll help make it amazing! Try: "${userProfile.preferredThemes[0]?.toLowerCase() || 'landscape'} with ${userProfile.favoriteStyles[0]?.toLowerCase() || 'artistic'} style"`
-                : "Be specific! Try: 'snow-capped mountain range with pine trees, dramatic clouds, landscape photography' or 'rocky mountain peaks at golden hour, alpine meadow in foreground'"
+              placeholder={
+                generationMode === 'video' 
+                  ? userProfile
+                    ? `Describe your video vision! Try: "A ${userProfile.preferredThemes[0]?.toLowerCase() || 'peaceful'} scene with ${userProfile.favoriteStyles[0]?.toLowerCase() || 'cinematic'} movement"`
+                    : "Be specific! Try: 'Waves crashing on rocky cliffs, seagulls flying overhead, sunset lighting' or 'Forest path with falling autumn leaves, gentle camera movement'"
+                  : userProfile 
+                    ? `Tell me your vision... I'll help make it amazing! Try: "${userProfile.preferredThemes[0]?.toLowerCase() || 'landscape'} with ${userProfile.favoriteStyles[0]?.toLowerCase() || 'artistic'} style"`
+                    : "Be specific! Try: 'snow-capped mountain range with pine trees, dramatic clouds, landscape photography' or 'rocky mountain peaks at golden hour, alpine meadow in foreground'"
               }
               rows={4}
               disabled={isGenerating}
@@ -317,16 +353,16 @@ const ImageGenerator: React.FC = () => {
             disabled={isGenerating || !description.trim()}
             className={getButtonClass()}
           >
-            {isGenerating ? 'Generating...' : 'Generate Image'}
+{isGenerating ? `Generating ${generationMode}...` : `Generate ${generationMode === 'image' ? 'Image' : 'Video'}`}
           </button>
         </form>
       </div>
 
       <div className="generated-images">
-        <h2>Generated Images</h2>
+        <h2>Generated Content</h2>
         {generatedImages.length === 0 ? (
           <div className="no-images">
-            <p>No images generated yet. Start by describing an image above!</p>
+            <p>No content generated yet. Start by describing what you want to create above!</p>
           </div>
         ) : (
           <div className="images-grid">
@@ -337,7 +373,20 @@ const ImageGenerator: React.FC = () => {
                 onClick={() => openImageViewer(index)}
               >
                 <div className="image-container-card">
-                  <img src={image.url} alt={image.description} />
+                  {image.type === 'video' ? (
+                    <video 
+                      src={image.url} 
+                      poster={image.url.replace('.mp4', '_thumbnail.jpg')}
+                      controls
+                      muted
+                      loop
+                      style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+                    >
+                      Your browser does not support video playback.
+                    </video>
+                  ) : (
+                    <img src={image.url} alt={image.description} />
+                  )}
                   <div className="image-overlay">
                     <div className="overlay-icon">👆</div>
                     <div className="overlay-text">Tap to view</div>

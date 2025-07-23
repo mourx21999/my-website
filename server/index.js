@@ -167,6 +167,120 @@ app.post('/generate-image', async (req, res) => {
   }
 });
 
+app.post('/generate-video', async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt) {
+    return res.status(400).json({ error: 'Prompt is required' });
+  }
+
+  console.log(`[${new Date().toISOString()}] Generating video for prompt: "${prompt}"`);
+
+  // Check if we have a Hugging Face token
+  const hfToken = process.env.HUGGING_FACE_TOKEN || process.env.HF_TOKEN;
+  
+  if (hfToken) {
+    console.log('🎬 Found Hugging Face token, attempting video generation...');
+    
+    // Try video generation services
+    const videoServices = [
+      {
+        name: 'Stable Video Diffusion',
+        url: 'https://api-inference.huggingface.co/models/stabilityai/stable-video-diffusion-img2vid-xt',
+        body: { inputs: prompt, options: { wait_for_model: true } }
+      },
+      {
+        name: 'AnimateDiff',
+        url: 'https://api-inference.huggingface.co/models/guoyww/animatediff',
+        body: { inputs: prompt, options: { wait_for_model: true } }
+      }
+    ];
+
+    for (const service of videoServices) {
+      try {
+        console.log(`Attempting ${service.name}...`);
+        
+        const response = await fetch(service.url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${hfToken}`
+          },
+          body: JSON.stringify(service.body)
+        });
+
+        console.log(`${service.name} response status: ${response.status}`);
+        
+        if (response.ok) {
+          const contentType = response.headers.get('content-type');
+          console.log(`Content-Type: ${contentType}`);
+          
+          if (contentType && (contentType.includes('video/') || contentType.includes('application/octet-stream'))) {
+            // It's a video response
+            const videoBuffer = await response.arrayBuffer();
+            const base64Video = Buffer.from(videoBuffer).toString('base64');
+            const videoUrl = `data:video/mp4;base64,${base64Video}`;
+            
+            console.log(`✅ Successfully generated video via ${service.name}`);
+            return res.json({ 
+              url: videoUrl, 
+              source: 'hugging-face-video',
+              message: `AI-generated video (${service.name})`
+            });
+          } else {
+            // Check if it's a JSON error response
+            const text = await response.text();
+            console.log(`${service.name} response: ${text}`);
+            
+            try {
+              const jsonResponse = JSON.parse(text);
+              if (jsonResponse.error) {
+                console.log(`❌ ${service.name} error: ${jsonResponse.error}`);
+                continue; // Try next service
+              }
+            } catch (parseError) {
+              console.log(`❌ ${service.name} unexpected response format`);
+              continue; // Try next service
+            }
+          }
+        } else {
+          const errorText = await response.text();
+          console.log(`❌ ${service.name} HTTP error ${response.status}: ${errorText}`);
+          continue; // Try next service
+        }
+      } catch (error) {
+        console.log(`❌ ${service.name} request failed: ${error.message}`);
+        continue; // Try next service
+      }
+    }
+    
+    console.log('❌ All video services failed, falling back to static image as video preview');
+  }
+
+  // Fallback: Generate a static image instead
+  try {
+    console.log('🔄 Fallback: Generating static image for video preview...');
+    const searchQuery = encodeURIComponent(prompt.trim());
+    const imageUrl = `https://source.unsplash.com/512x512/?${searchQuery}`;
+    
+    const message = hfToken 
+      ? 'Image preview (Video generation temporarily unavailable)'
+      : 'Image preview (Video generation requires Hugging Face token)';
+    
+    console.log('📸 Returning image preview for video request');
+    return res.json({ 
+      url: imageUrl, 
+      source: 'unsplash-photo',
+      message: message
+    });
+  } catch (fallbackError) {
+    console.log(`❌ Image fallback failed: ${fallbackError.message}`);
+    return res.status(500).json({ 
+      error: 'Video generation and image fallback failed',
+      details: fallbackError.message
+    });
+  }
+});
+
 // Catch-all handler: send back React's index.html file in production
 if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {
