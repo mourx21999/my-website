@@ -66,7 +66,7 @@ const ImageGenerator: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch('/api/generate-image', {
+      const response = await fetch('/generate-image', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

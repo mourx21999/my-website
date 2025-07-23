@@ -22,6 +22,7 @@
     "start:prod": "cd server && NODE_ENV=production npm start",
     "vercel-build": "npm run build"
   },
+  "proxy": "http://localhost:5001",
   "eslintConfig": {
     "extends": [
       "react-app",
