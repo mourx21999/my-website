@@ -383,10 +383,9 @@ const ImageGenerator: React.FC = () => {
                     <video 
                       src={image.url} 
                       poster={image.url.replace('.mp4', '_thumbnail.jpg')}
-                      controls
                       muted
                       loop
-                      style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+                      style={{ width: '100%', height: '200px', objectFit: 'cover', pointerEvents: 'none' }}
                     >
                       Your browser does not support video playback.
                     </video>
