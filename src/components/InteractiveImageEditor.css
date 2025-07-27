@@ -1,0 +1,423 @@
+.interactive-image-editor {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 25px;
+  margin: 20px 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 107, 107, 0.2);
+}
+
+.iie-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.iie-header h3 {
+  color: #333;
+  margin-bottom: 8px;
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.iie-header p {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.editor-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+.image-canvas-container {
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  background: #f8f9fa;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.edit-canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: crosshair;
+  transition: transform 0.3s ease;
+}
+
+.edit-canvas:hover {
+  transform: scale(1.02);
+}
+
+.edit-points-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.edit-point {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  animation: pulse 2s infinite;
+  transition: all 0.3s ease;
+}
+
+.edit-point:hover {
+  transform: translate(-50%, -50%) scale(1.2);
+}
+
+.edit-point.edit-regenerate {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  border: 3px solid white;
+}
+
+.edit-point.edit-remove {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  border: 3px solid white;
+}
+
+.edit-point.edit-enhance {
+  background: linear-gradient(135deg, #2196F3, #1976D2);
+  border: 3px solid white;
+}
+
+.edit-number {
+  color: white;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.editor-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tool-selector {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tool-selector h4 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.tool-buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.tool-btn {
+  padding: 12px 16px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: white;
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.tool-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.tool-btn.active {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  border-color: rgba(255, 107, 107, 0.3);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+.edit-prompt {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.edit-prompt h4 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.prompt-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.3s ease;
+}
+
+.prompt-input:focus {
+  outline: none;
+  border-color: #ff6b6b;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+.edit-summary {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.edit-summary h4 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.no-edits {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+.edit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.edit-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.edit-type-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.edit-type-badge.regenerate {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+}
+
+.edit-type-badge.remove {
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+}
+
+.edit-type-badge.enhance {
+  background: rgba(33, 150, 243, 0.2);
+  color: #2196F3;
+}
+
+.edit-description {
+  flex: 1;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.remove-edit-btn {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.remove-edit-btn:hover {
+  background: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+}
+
+.editor-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 15px;
+}
+
+.btn-clear-edits,
+.btn-process-edits {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.btn-clear-edits {
+  background: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+  border: 2px solid rgba(108, 117, 125, 0.2);
+}
+
+.btn-clear-edits:hover:not(:disabled) {
+  background: rgba(108, 117, 125, 0.2);
+  transform: translateY(-2px);
+}
+
+.btn-clear-edits:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-process-edits {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.btn-process-edits:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.btn-process-edits:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.2);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .interactive-image-editor {
+    margin: 10px;
+    padding: 15px;
+  }
+  
+  .editor-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .tool-buttons {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  
+  .tool-btn {
+    padding: 10px 8px;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+  
+  .editor-actions {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .edit-canvas {
+    max-height: 300px;
+  }
+  
+  .edit-point {
+    width: 25px;
+    height: 25px;
+  }
+  
+  .edit-number {
+    font-size: 0.7rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .interactive-image-editor {
+    background: rgba(45, 45, 45, 0.95);
+    border-color: rgba(255, 107, 107, 0.3);
+  }
+  
+  .iie-header h3,
+  .tool-selector h4,
+  .edit-prompt h4,
+  .edit-summary h4 {
+    color: #f0f0f0;
+  }
+  
+  .iie-header p,
+  .no-edits {
+    color: #ccc;
+  }
+  
+  .tool-selector,
+  .edit-prompt,
+  .edit-summary {
+    background: rgba(60, 60, 60, 0.8);
+  }
+  
+  .tool-btn {
+    background: rgba(70, 70, 70, 0.9);
+    color: #ddd;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .prompt-input {
+    background: rgba(70, 70, 70, 0.9);
+    color: #ddd;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .edit-item {
+    background: rgba(70, 70, 70, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .edit-description {
+    color: #ccc;
+  }
+}

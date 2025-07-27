@@ -3,15 +3,21 @@ import './ImageGenerator.css';
 import TouchImageViewer from './TouchImageViewer';
 import PersonalProfile from './PersonalProfile';
 import SmartPromptAssistant from './SmartPromptAssistant';
+import AIPromptArchitect from './AIPromptArchitect';
+import StyleTransferChain from './StyleTransferChain';
+import InteractiveImageEditor from './InteractiveImageEditor';
+import CollaborativeCanvas from './CollaborativeCanvas';
+import ImageStoryGenerator from './ImageStoryGenerator';
+import MoodBasedGeneration from './MoodBasedGeneration';
+import TextStoryGenerator from './TextStoryGenerator';
 
 interface GeneratedImage {
   id: string;
   url: string;
   description: string;
   timestamp: Date;
-  source: 'hugging-face-ai' | 'unsplash-photo' | 'hugging-face-video' | 'demo-video' | 'unknown';
+  source: 'hugging-face-ai' | 'unsplash-photo' | 'unknown';
   message: string;
-  type: 'image' | 'video';
 }
 
 interface UserProfile {
@@ -38,7 +44,13 @@ const ImageGenerator: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [showProfileSetup, setShowProfileSetup] = useState<boolean>(false);
-  const [generationMode, setGenerationMode] = useState<'image' | 'video'>('image');
+  const [showAdvancedFeatures, setShowAdvancedFeatures] = useState<boolean>(false);
+  const [selectedImageForStyleTransfer, setSelectedImageForStyleTransfer] = useState<string | null>(null);
+  const [selectedImageForEditing, setSelectedImageForEditing] = useState<string | null>(null);
+  const [showCollaborativeCanvas, setShowCollaborativeCanvas] = useState<boolean>(false);
+  const [showImageStoryGenerator, setShowImageStoryGenerator] = useState<boolean>(false);
+  const [showMoodBasedGeneration, setShowMoodBasedGeneration] = useState<boolean>(false);
+  const [showTextStoryGenerator, setShowTextStoryGenerator] = useState<boolean>(false);
 
   // Load user profile on component mount
   useEffect(() => {
@@ -68,21 +80,20 @@ const ImageGenerator: React.FC = () => {
     setError('');
 
     try {
-      const endpoint = generationMode === 'video' ? '/generate-video' : '/generate-image';
+      const endpoint = 'http://localhost:5001/generate-image';
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
-          prompt: description.trim(),
-          mode: generationMode
+          prompt: description.trim()
         })
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to generate ${generationMode}`);
+        throw new Error(errorData.error || 'Failed to generate image');
       }
 
       const data = await response.json();
@@ -92,8 +103,7 @@ const ImageGenerator: React.FC = () => {
         description: description,
         timestamp: new Date(),
         source: data.source || 'unknown',
-        message: data.message || `${generationMode} generated`,
-        type: generationMode // This ensures video mode requests are treated as videos
+        message: data.message || 'Image generated'
       };
 
       setGeneratedImages(prev => [...prev, newImage]);
@@ -257,6 +267,58 @@ const ImageGenerator: React.FC = () => {
     }
   };
 
+  const handlePromptImprove = (improvedPrompt: string) => {
+    setDescription(improvedPrompt);
+  };
+
+  const handleStyleTransfer = (originalImage: string, styles: string[]) => {
+    // Create a new prompt for style transfer
+    const stylePrompt = `${description} in the style of ${styles.join(' and ')}`;
+    setDescription(stylePrompt);
+    // Trigger generation with the style-modified prompt
+    generateImage();
+  };
+
+  const handleImageEdit = (editedImage: string, editDescription: string) => {
+    const newImage: GeneratedImage = {
+      id: Date.now().toString(),
+      url: editedImage,
+      description: `Edited: ${editDescription}`,
+      timestamp: new Date(),
+      source: 'unknown',
+      message: 'Interactive editing completed',
+    };
+    setGeneratedImages(prev => [...prev, newImage]);
+  };
+
+  const handleCanvasCreate = (canvasData: string, collaborators: string[]) => {
+    setDescription(canvasData);
+    // Auto-generate after collaborative prompt creation
+    generateImage();
+  };
+
+  const handleStoryGenerate = (story: any) => {
+    // Use the story title as a prompt for generating a cover image
+    const coverPrompt = `Book cover art for "${story.title}", ${story.genre.toLowerCase()} ${story.mood.toLowerCase()} style, featuring ${story.characters.map((c: any) => c.name).join(' and ')}, professional book cover design`;
+    setDescription(coverPrompt);
+    generateImage();
+  };
+
+  const handleTextStoryGenerate = (story: any) => {
+    console.log('📚 Text story generated:', story);
+    // Optionally generate a cover image for the text story
+    if (story.characters.length > 0) {
+      const coverPrompt = `Book cover art for "${story.title}", ${story.genre.toLowerCase()} ${story.mood.toLowerCase()} style, featuring ${story.characters.map((c: any) => c.name).join(' and ')}, professional book cover design`;
+      setDescription(coverPrompt);
+      generateImage();
+    }
+  };
+
+  const handleMoodGenerate = (prompt: string, mood: any) => {
+    setDescription(prompt);
+    generateImage();
+  };
+
   const getPersonalizedGreeting = () => {
     if (!userProfile?.name) return null;
     
@@ -311,41 +373,36 @@ const ImageGenerator: React.FC = () => {
           onStyleSuggestion={handleStyleSuggestion}
         />
 
-        {/* Generation Mode Toggle */}
-        <div className="mode-toggle">
+        {/* AI Prompt Architect */}
+        <AIPromptArchitect
+          currentPrompt={description}
+          onPromptImprove={handlePromptImprove}
+        />
+
+        {/* Advanced Features Toggle */}
+        <div className="advanced-features-toggle">
           <button
-            type="button"
-            className={`mode-btn ${generationMode === 'image' ? 'active' : ''}`}
-            onClick={() => setGenerationMode('image')}
+            className="toggle-advanced-btn"
+            onClick={() => setShowAdvancedFeatures(!showAdvancedFeatures)}
           >
-            🖼️ Images
-          </button>
-          <button
-            type="button"
-            className={`mode-btn ${generationMode === 'video' ? 'active' : ''}`}
-            onClick={() => setGenerationMode('video')}
-          >
-            🎬 Videos
+            🚀 {showAdvancedFeatures ? 'Hide' : 'Show'} Advanced AI Features
           </button>
         </div>
+
 
         <form onSubmit={handleSubmit}>
           <div className="input-group">
             <label htmlFor="description">
-              {userProfile ? `What ${generationMode} would you like to create today?` : `Describe the ${generationMode} you want to create:`}
+              {userProfile ? 'What image would you like to create today?' : 'Describe the image you want to create:'}
             </label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder={
-                generationMode === 'video' 
-                  ? userProfile
-                    ? `Describe your video vision! Try: "A ${userProfile.preferredThemes[0]?.toLowerCase() || 'peaceful'} scene with ${userProfile.favoriteStyles[0]?.toLowerCase() || 'cinematic'} movement"`
-                    : "Be specific! Try: 'Waves crashing on rocky cliffs, seagulls flying overhead, sunset lighting' or 'Forest path with falling autumn leaves, gentle camera movement'"
-                  : userProfile 
-                    ? `Tell me your vision... I'll help make it amazing! Try: "${userProfile.preferredThemes[0]?.toLowerCase() || 'landscape'} with ${userProfile.favoriteStyles[0]?.toLowerCase() || 'artistic'} style"`
-                    : "Be specific! Try: 'snow-capped mountain range with pine trees, dramatic clouds, landscape photography' or 'rocky mountain peaks at golden hour, alpine meadow in foreground'"
+                userProfile 
+                  ? `Tell me your vision... I'll help make it amazing! Try: "${userProfile.preferredThemes[0]?.toLowerCase() || 'landscape'} with ${userProfile.favoriteStyles[0]?.toLowerCase() || 'artistic'} style"`
+                  : "Be specific! Try: 'snow-capped mountain range with pine trees, dramatic clouds, landscape photography' or 'rocky mountain peaks at golden hour, alpine meadow in foreground'"
               }
               rows={4}
               disabled={isGenerating}
@@ -359,10 +416,102 @@ const ImageGenerator: React.FC = () => {
             disabled={isGenerating || !description.trim()}
             className={getButtonClass()}
           >
-{isGenerating ? `Generating ${generationMode}...` : `Generate ${generationMode === 'image' ? 'Image' : 'Video'}`}
+{isGenerating ? 'Generating image...' : 'Generate Image'}
           </button>
         </form>
       </div>
+
+      {/* Advanced AI Features */}
+      {showAdvancedFeatures && (
+        <div className="advanced-features-panel">
+          {/* Feature Selection Tabs */}
+          <div className="advanced-features-tabs">
+            <button
+              className={`feature-tab ${showMoodBasedGeneration ? 'active' : ''}`}
+              onClick={() => {
+                setShowMoodBasedGeneration(true);
+                setShowCollaborativeCanvas(false);
+                setShowImageStoryGenerator(false);
+                setShowTextStoryGenerator(false);
+              }}
+            >
+              🎭 Mood Generation
+            </button>
+            <button
+              className={`feature-tab ${showCollaborativeCanvas ? 'active' : ''}`}
+              onClick={() => {
+                setShowCollaborativeCanvas(true);
+                setShowMoodBasedGeneration(false);
+                setShowImageStoryGenerator(false);
+                setShowTextStoryGenerator(false);
+              }}
+            >
+              🤝 Collaborative Canvas
+            </button>
+            <button
+              className={`feature-tab ${showImageStoryGenerator ? 'active' : ''}`}
+              onClick={() => {
+                setShowImageStoryGenerator(true);
+                setShowMoodBasedGeneration(false);
+                setShowCollaborativeCanvas(false);
+                setShowTextStoryGenerator(false);
+              }}
+            >
+              📚 Image Stories
+            </button>
+            <button
+              className={`feature-tab ${showTextStoryGenerator ? 'active' : ''}`}
+              onClick={() => {
+                setShowTextStoryGenerator(true);
+                setShowMoodBasedGeneration(false);
+                setShowCollaborativeCanvas(false);
+                setShowImageStoryGenerator(false);
+              }}
+            >
+              📝 Text Stories
+            </button>
+          </div>
+
+          {/* Mood-Based Generation */}
+          {showMoodBasedGeneration && (
+            <MoodBasedGeneration onMoodGenerate={handleMoodGenerate} />
+          )}
+
+          {/* Collaborative Canvas */}
+          {showCollaborativeCanvas && (
+            <CollaborativeCanvas onCanvasCreate={handleCanvasCreate} />
+          )}
+
+          {/* Image Story Generator */}
+          {showImageStoryGenerator && (
+            <ImageStoryGenerator
+              images={generatedImages.map(img => img.url)}
+              onStoryGenerate={handleStoryGenerate}
+            />
+          )}
+
+          {/* Text Story Generator */}
+          {showTextStoryGenerator && (
+            <TextStoryGenerator onStoryGenerate={handleTextStoryGenerate} />
+          )}
+
+          {/* Style Transfer Chain */}
+          {selectedImageForStyleTransfer && (
+            <StyleTransferChain
+              originalImage={selectedImageForStyleTransfer}
+              onStyleTransfer={handleStyleTransfer}
+            />
+          )}
+
+          {/* Interactive Image Editor */}
+          {selectedImageForEditing && (
+            <InteractiveImageEditor
+              originalImage={selectedImageForEditing}
+              onImageEdit={handleImageEdit}
+            />
+          )}
+        </div>
+      )}
 
       <div className="generated-images">
         <h2>Generated Content</h2>
@@ -375,23 +524,11 @@ const ImageGenerator: React.FC = () => {
             {generatedImages.map((image, index) => (
               <div 
                 key={image.id} 
-                className={`image-card ${getSourceClass(image.source)}-card`}
+                className={`image-card ${getSourceClass(image.source)}-card ${selectedImageForStyleTransfer === image.url ? 'selected-for-transfer' : ''}`}
                 onClick={() => openImageViewer(index)}
               >
                 <div className="image-container-card">
-                  {image.type === 'video' ? (
-                    <video 
-                      src={image.url} 
-                      poster={image.url.replace('.mp4', '_thumbnail.jpg')}
-                      muted
-                      loop
-                      style={{ width: '100%', height: '200px', objectFit: 'cover', pointerEvents: 'none' }}
-                    >
-                      Your browser does not support video playback.
-                    </video>
-                  ) : (
-                    <img src={image.url} alt={image.description} />
-                  )}
+                  <img src={image.url} alt={image.description} />
                   <div className="image-overlay">
                     <div className="overlay-icon">👆</div>
                     <div className="overlay-text">Tap to view</div>
@@ -408,6 +545,28 @@ const ImageGenerator: React.FC = () => {
                   <p className="timestamp">
                     {image.timestamp.toLocaleString()}
                   </p>
+                  {showAdvancedFeatures && (
+                    <div className="advanced-actions">
+                      <button
+                        className="btn-style-transfer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedImageForStyleTransfer(image.url);
+                        }}
+                      >
+                        🎨 Style Transfer
+                      </button>
+                      <button
+                        className="btn-interactive-edit"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedImageForEditing(image.url);
+                        }}
+                      >
+                        ✨ Interactive Edit
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

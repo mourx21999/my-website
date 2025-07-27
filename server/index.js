@@ -28,7 +28,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Serve static files from the React app build directory in production
 if (process.env.NODE_ENV === 'production') {
@@ -167,163 +167,104 @@ app.post('/generate-image', async (req, res) => {
   }
 });
 
-app.post('/generate-video', async (req, res) => {
-  const { prompt } = req.body;
-  if (!prompt) {
-    return res.status(400).json({ error: 'Prompt is required' });
-  }
 
-  console.log(`[${new Date().toISOString()}] Generating video for prompt: "${prompt}"`);
+// Story generation endpoints
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    message: 'Story generation server is running',
+    endpoints: ['/generate-story-chapter', '/generate-story-title', '/health']
+  });
+});
 
-  // Check if we have a Hugging Face token
-  const hfToken = process.env.HUGGING_FACE_TOKEN || process.env.HF_TOKEN;
-  
-  if (hfToken) {
-    console.log('🎬 Found Hugging Face token, attempting video generation...');
-    
-    // Try video generation services
-    const videoServices = [
-      {
-        name: 'Stable Video Diffusion',
-        url: 'https://api-inference.huggingface.co/models/stabilityai/stable-video-diffusion-img2vid-xt',
-        body: { inputs: prompt, options: { wait_for_model: true } }
-      },
-      {
-        name: 'AnimateDiff',
-        url: 'https://api-inference.huggingface.co/models/guoyww/animatediff',
-        body: { inputs: prompt, options: { wait_for_model: true } }
-      }
-    ];
-
-    for (const service of videoServices) {
-      try {
-        console.log(`Attempting ${service.name}...`);
-        
-        const response = await fetch(service.url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${hfToken}`
-          },
-          body: JSON.stringify(service.body)
-        });
-
-        console.log(`${service.name} response status: ${response.status}`);
-        
-        if (response.ok) {
-          const contentType = response.headers.get('content-type');
-          console.log(`Content-Type: ${contentType}`);
-          
-          if (contentType && (contentType.includes('video/') || contentType.includes('application/octet-stream'))) {
-            // It's a video response
-            const videoBuffer = await response.arrayBuffer();
-            const base64Video = Buffer.from(videoBuffer).toString('base64');
-            const videoUrl = `data:video/mp4;base64,${base64Video}`;
-            
-            console.log(`✅ Successfully generated video via ${service.name}`);
-            return res.json({ 
-              url: videoUrl, 
-              source: 'hugging-face-video',
-              message: `AI-generated video (${service.name})`
-            });
-          } else {
-            // Check if it's a JSON error response
-            const text = await response.text();
-            console.log(`${service.name} response: ${text}`);
-            
-            try {
-              const jsonResponse = JSON.parse(text);
-              if (jsonResponse.error) {
-                console.log(`❌ ${service.name} error: ${jsonResponse.error}`);
-                continue; // Try next service
-              }
-            } catch (parseError) {
-              console.log(`❌ ${service.name} unexpected response format`);
-              continue; // Try next service
-            }
-          }
-        } else {
-          const errorText = await response.text();
-          console.log(`❌ ${service.name} HTTP error ${response.status}: ${errorText}`);
-          continue; // Try next service
-        }
-      } catch (error) {
-        console.log(`❌ ${service.name} request failed: ${error.message}`);
-        continue; // Try next service
-      }
-    }
-    
-    console.log('❌ All video services failed, falling back to static image as video preview');
-  }
-
-  // Fallback: Generate a demo video for demonstration
+app.post('/generate-story-chapter', async (req, res) => {
   try {
-    console.log('🔄 Fallback: Using demo video for testing...');
+    const { prompt, image_url, chapter_index, genre, mood, characters, max_tokens } = req.body;
     
-    // Demo videos that match different prompt themes
-    const demoVideos = [
-      {
-        keywords: ['ocean', 'wave', 'sea', 'water', 'beach', 'coast'],
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-        title: 'Ocean Waves Demo'
+    console.log(`🤖 Generating ${genre} chapter ${chapter_index + 1}...`);
+    
+    // Simple story generation (fallback implementation)
+    const storyTemplates = {
+      Fantasy: {
+        settings: ['enchanted forest', 'mystical kingdom', 'floating castle', 'crystal caves'],
+        conflicts: ['ancient curse', 'dark prophecy', 'evil sorcerer', 'mythical beast'],
+        resolutions: ['heroic sacrifice', 'magical transformation', 'divine intervention', 'inner strength']
       },
-      {
-        keywords: ['city', 'urban', 'street', 'traffic', 'night', 'lights'],
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4', 
-        title: 'City Scene Demo'
+      'Sci-Fi': {
+        settings: ['distant planet', 'space station', 'cyberpunk city', 'alien world'],
+        conflicts: ['alien invasion', 'AI uprising', 'time paradox', 'corporate conspiracy'],
+        resolutions: ['technological breakthrough', 'peaceful contact', 'quantum solution', 'evolution']
       },
-      {
-        keywords: ['nature', 'forest', 'tree', 'leaf', 'green', 'plant'],
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4',
-        title: 'Nature Demo'
-      },
-      {
-        keywords: ['fire', 'flame', 'smoke', 'burn'],
-        url: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4',
-        title: 'Fire Demo'
+      Mystery: {
+        settings: ['crime scene', 'old mansion', 'foggy street', 'locked room'],
+        conflicts: ['murder mystery', 'missing person', 'theft', 'conspiracy'],
+        resolutions: ['clever deduction', 'hidden evidence', 'confession', 'unexpected twist']
       }
-    ];
-
-    // Find best matching demo video based on prompt
-    const promptLower = prompt.toLowerCase();
-    let selectedVideo = demoVideos.find(video => 
-      video.keywords.some(keyword => promptLower.includes(keyword))
-    );
+    };
     
-    // Default to first video if no match
-    if (!selectedVideo) {
-      selectedVideo = demoVideos[0];
-    }
+    const genreData = storyTemplates[genre] || storyTemplates['Fantasy'];
+    const protagonist = characters?.[0]?.name || 'the protagonist';
     
-    const message = hfToken 
-      ? `Demo video: ${selectedVideo.title} (AI video generation temporarily unavailable)`
-      : `Demo video: ${selectedVideo.title} (AI video generation requires Hugging Face token)`;
-    
-    console.log(`🎬 Returning demo video: ${selectedVideo.title}`);
-    return res.json({ 
-      url: selectedVideo.url, 
-      source: 'demo-video',
-      message: message
-    });
-  } catch (fallbackError) {
-    console.log(`❌ Demo video fallback failed: ${fallbackError.message}`);
-    
-    // Final fallback to image
-    try {
-      const searchQuery = encodeURIComponent(prompt.trim());
-      const imageUrl = `https://source.unsplash.com/512x512/?${searchQuery}`;
+    const chapterStories = [
+      `In the ${genreData.settings[0]}, ${protagonist} discovered something that would change everything. The ${mood.toLowerCase()} atmosphere was thick with anticipation as shadows danced across ancient stones. What started as a simple journey had become something far more significant.`,
       
-      return res.json({ 
-        url: imageUrl, 
-        source: 'unsplash-photo',
-        message: 'Image preview (Video demo unavailable)'
-      });
-    } catch (finalError) {
-      return res.status(500).json({ 
-        error: 'All video generation methods failed',
-        details: finalError.message
-      });
-    }
+      `As ${protagonist} delved deeper into the mystery, the ${mood.toLowerCase()} tension grew unbearable. Every step forward brought new challenges, and the ${genreData.settings[1]} seemed to pulse with hidden energy.`,
+      
+      `The confrontation was inevitable. ${protagonist} stood face to face with the ${genreData.conflicts[0]}, and the ${mood.toLowerCase()} atmosphere crackled with power. Everything they had learned led to this moment.`,
+      
+      `In the aftermath of great trials, ${protagonist} reflected on how much had changed. Through ${genreData.resolutions[0]}, a new dawn had broken.`
+    ];
+    
+    const story_text = chapterStories[Math.min(chapter_index, 3)] || 
+      `Chapter ${chapter_index + 1} continued the ${mood.toLowerCase()} tale of ${protagonist}.`;
+    
+    console.log(`✅ Generated ${story_text.length} characters for chapter ${chapter_index + 1}`);
+    
+    res.json({
+      story_text,
+      chapter_index,
+      success: true,
+      message: `Generated ${genre} chapter ${chapter_index + 1} with ${mood} mood`
+    });
+    
+  } catch (error) {
+    console.error('Story chapter generation error:', error);
+    res.status(500).json({
+      error: error.message,
+      success: false
+    });
+  }
+});
+
+app.post('/generate-story-title', async (req, res) => {
+  try {
+    const { prompt, genre, mood } = req.body;
+    
+    console.log(`🎯 Generating ${genre} title with ${mood} mood...`);
+    
+    const titleTemplates = {
+      Fantasy: [`The ${mood} Chronicles`, `Legends of ${mood}`, `The ${mood} Quest`],
+      'Sci-Fi': [`Beyond the ${mood} Stars`, `The ${mood} Protocol`, `${mood} Horizons`],
+      Mystery: [`The ${mood} Case`, `${mood} Shadows`, `The ${mood} Investigation`]
+    };
+    
+    const templates = titleTemplates[genre] || titleTemplates['Fantasy'];
+    const title = templates[Math.floor(Math.random() * templates.length)];
+    
+    console.log(`✅ Generated title: "${title}"`);
+    
+    res.json({
+      title,
+      success: true,
+      message: `Generated ${genre} title with ${mood} mood`
+    });
+    
+  } catch (error) {
+    console.error('Story title generation error:', error);
+    res.status(500).json({
+      error: error.message,
+      success: false
+    });
   }
 });
 

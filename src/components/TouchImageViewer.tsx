@@ -6,9 +6,8 @@ interface GeneratedImage {
   url: string;
   description: string;
   timestamp: Date;
-  source: 'hugging-face-ai' | 'unsplash-photo' | 'hugging-face-video' | 'demo-video' | 'unknown';
+  source: 'hugging-face-ai' | 'unsplash-photo' | 'unknown';
   message: string;
-  type: 'image' | 'video';
 }
 
 interface TouchImageViewerProps {
@@ -48,7 +47,6 @@ const TouchImageViewer: React.FC<TouchImageViewerProps> = ({
   onShare
 }) => {
   const imageRef = useRef<HTMLImageElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [touchState, setTouchState] = useState<TouchState>({
     x: 0,
@@ -363,35 +361,17 @@ const TouchImageViewer: React.FC<TouchImageViewerProps> = ({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-{currentImage.type === 'video' ? (
-          <video
-            ref={videoRef}
-            src={currentImage.url}
-            className="viewer-image"
-            style={{
-              transform: `scale(${touchState.scale}) translate(${touchState.translateX}px, ${touchState.translateY}px)`,
-              transition: isDragging ? 'none' : 'transform 0.3s ease-out'
-            }}
-            controls
-            muted
-            loop
-            autoPlay
-          >
-            Your browser does not support video playback.
-          </video>
-        ) : (
-          <img
-            ref={imageRef}
-            src={currentImage.url}
-            alt={currentImage.description}
-            className="viewer-image"
-            style={{
-              transform: `scale(${touchState.scale}) translate(${touchState.translateX}px, ${touchState.translateY}px)`,
-              transition: isDragging ? 'none' : 'transform 0.3s ease-out'
-            }}
-            draggable={false}
-          />
-        )}
+        <img
+          ref={imageRef}
+          src={currentImage.url}
+          alt={currentImage.description}
+          className="viewer-image"
+          style={{
+            transform: `scale(${touchState.scale}) translate(${touchState.translateX}px, ${touchState.translateY}px)`,
+            transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+          }}
+          draggable={false}
+        />
 
         {/* Navigation arrows */}
         {!touchState.isZoomed && (

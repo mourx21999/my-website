@@ -99,4 +99,22 @@ Thumbs.db
 
 # Temporary files
 *.tmp
-*.temp 
+*.temp
+
+# Python virtual environment
+venv/
+
+# Log files
+*.log
+server.log
+story_server.log
+frontend.log
+
+# Debug files
+debug_frontend.html
+debug_story_generation.md
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class 

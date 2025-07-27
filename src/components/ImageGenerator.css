@@ -466,6 +466,138 @@
   }
 }
 
+/* Advanced Features Styling */
+.advanced-features-toggle {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.toggle-advanced-btn {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.toggle-advanced-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.advanced-features-panel {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 25px;
+  margin: 20px 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 107, 107, 0.2);
+}
+
+.advanced-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-style-transfer {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-style-transfer:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+}
+
+.image-card.selected-for-transfer {
+  border-color: #ff6b6b !important;
+  box-shadow: 0 0 20px rgba(255, 107, 107, 0.4) !important;
+  transform: translateY(-3px);
+}
+
+.image-card.selected-for-transfer::after {
+  content: '🎨 Selected for Style Transfer';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ff6b6b;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+/* Advanced Features Tabs */
+.advanced-features-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  border-bottom: 2px solid rgba(255, 107, 107, 0.2);
+  padding-bottom: 15px;
+}
+
+.feature-tab {
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(255, 107, 107, 0.2);
+  color: #666;
+  padding: 12px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.feature-tab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.2);
+  border-color: rgba(255, 107, 107, 0.4);
+}
+
+.feature-tab.active {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  border-color: rgba(255, 107, 107, 0.3);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+/* Interactive Edit Button */
+.btn-interactive-edit {
+  background: linear-gradient(135deg, #673ab7, #9c27b0);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-interactive-edit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(103, 58, 183, 0.3);
+}
+
 @media (max-width: 768px) {
   .generator-form,
   .generated-images {
@@ -493,5 +625,20 @@
 
   .App-header h1 {
     font-size: 2rem;
+  }
+
+  .advanced-features-panel {
+    margin: 10px;
+    padding: 15px;
+  }
+
+  .advanced-features-tabs {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .feature-tab {
+    padding: 10px 15px;
+    font-size: 0.85rem;
   }
 } 
