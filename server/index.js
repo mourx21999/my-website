@@ -167,6 +167,95 @@ app.post('/generate-image', async (req, res) => {
   }
 });
 
+// Image-to-Image generation endpoint
+app.post('/generate-image-to-image', async (req, res) => {
+  const { prompt, image, strength, guidance_scale, num_inference_steps } = req.body;
+  
+  if (!prompt || !image) {
+    return res.status(400).json({ error: 'Prompt and image are required' });
+  }
+
+  console.log(`[${new Date().toISOString()}] Generating image-to-image for prompt: "${prompt}"`);
+
+  const hfToken = process.env.HUGGING_FACE_TOKEN || process.env.HF_TOKEN;
+  
+  if (hfToken) {
+    console.log('🎨 Found Hugging Face token, attempting image-to-image generation...');
+    
+    try {
+      // Convert base64 image to binary for Hugging Face API
+      const base64Data = image.replace(/^data:image\/[a-z]+;base64,/, '');
+      const imageBuffer = Buffer.from(base64Data, 'base64');
+      
+      const response = await fetch('https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${hfToken}`
+        },
+        body: JSON.stringify({
+          inputs: prompt,
+          parameters: {
+            strength: strength || 0.75,
+            guidance_scale: guidance_scale || 7.5,
+            num_inference_steps: num_inference_steps || 30
+          },
+          options: {
+            wait_for_model: true
+          }
+        })
+      });
+
+      console.log(`Image-to-image response status: ${response.status}`);
+      
+      if (response.ok) {
+        const contentType = response.headers.get('content-type');
+        console.log(`Content-Type: ${contentType}`);
+        
+        if (contentType && contentType.includes('image/')) {
+          const imageBuffer = await response.arrayBuffer();
+          const base64Image = Buffer.from(imageBuffer).toString('base64');
+          const imageUrl = `data:image/png;base64,${base64Image}`;
+          
+          console.log('✅ Successfully generated image-to-image via Hugging Face');
+          return res.json({ 
+            url: imageUrl, 
+            source: 'hugging-face-img2img',
+            message: 'AI-generated image transformation'
+          });
+        } else {
+          const text = await response.text();
+          console.log(`Hugging Face response: ${text}`);
+          
+          try {
+            const jsonResponse = JSON.parse(text);
+            if (jsonResponse.error) {
+              console.log(`❌ Hugging Face error: ${jsonResponse.error}`);
+            }
+          } catch (parseError) {
+            console.log('❌ Unexpected response format from Hugging Face');
+          }
+        }
+      } else {
+        const errorText = await response.text();
+        console.log(`❌ Hugging Face HTTP error ${response.status}: ${errorText}`);
+      }
+    } catch (error) {
+      console.log(`❌ Image-to-image request failed: ${error.message}`);
+    }
+  } else {
+    console.log('🔑 No Hugging Face token found - Image-to-image requires authentication');
+  }
+
+  // Fallback: return original image with message
+  console.log('🔄 Using fallback: returning original image');
+  return res.json({ 
+    url: image, 
+    source: 'fallback-original',
+    message: 'Image-to-image requires Hugging Face token. Showing original image.'
+  });
+});
+
 
 // Story generation endpoints
 app.get('/health', (req, res) => {

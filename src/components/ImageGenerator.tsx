@@ -10,6 +10,7 @@ import CollaborativeCanvas from './CollaborativeCanvas';
 import ImageStoryGenerator from './ImageStoryGenerator';
 import MoodBasedGeneration from './MoodBasedGeneration';
 import TextStoryGenerator from './TextStoryGenerator';
+import ImageToImageGenerator from './ImageToImageGenerator';
 
 interface GeneratedImage {
   id: string;
@@ -51,6 +52,7 @@ const ImageGenerator: React.FC = () => {
   const [showImageStoryGenerator, setShowImageStoryGenerator] = useState<boolean>(false);
   const [showMoodBasedGeneration, setShowMoodBasedGeneration] = useState<boolean>(false);
   const [showTextStoryGenerator, setShowTextStoryGenerator] = useState<boolean>(false);
+  const [showImageToImageGenerator, setShowImageToImageGenerator] = useState<boolean>(false);
 
   // Load user profile on component mount
   useEffect(() => {
@@ -314,6 +316,20 @@ const ImageGenerator: React.FC = () => {
     }
   };
 
+  const handleImageGenerate = (imageData: any) => {
+    console.log('🎨 Image-to-image generated:', imageData);
+    // Add the transformed image to the gallery
+    const newImage: GeneratedImage = {
+      id: imageData.id || Date.now().toString(),
+      url: imageData.url,
+      description: imageData.description || 'Image transformation',
+      timestamp: imageData.timestamp || new Date(),
+      source: imageData.source || 'hugging-face-img2img',
+      message: imageData.message || 'Image transformed successfully'
+    };
+    setGeneratedImages(prev => [newImage, ...prev]);
+  };
+
   const handleMoodGenerate = (prompt: string, mood: any) => {
     setDescription(prompt);
     generateImage();
@@ -433,6 +449,7 @@ const ImageGenerator: React.FC = () => {
                 setShowCollaborativeCanvas(false);
                 setShowImageStoryGenerator(false);
                 setShowTextStoryGenerator(false);
+                setShowImageToImageGenerator(false);
               }}
             >
               🎭 Mood Generation
@@ -444,6 +461,7 @@ const ImageGenerator: React.FC = () => {
                 setShowMoodBasedGeneration(false);
                 setShowImageStoryGenerator(false);
                 setShowTextStoryGenerator(false);
+                setShowImageToImageGenerator(false);
               }}
             >
               🤝 Collaborative Canvas
@@ -455,6 +473,7 @@ const ImageGenerator: React.FC = () => {
                 setShowMoodBasedGeneration(false);
                 setShowCollaborativeCanvas(false);
                 setShowTextStoryGenerator(false);
+                setShowImageToImageGenerator(false);
               }}
             >
               📚 Image Stories
@@ -466,9 +485,22 @@ const ImageGenerator: React.FC = () => {
                 setShowMoodBasedGeneration(false);
                 setShowCollaborativeCanvas(false);
                 setShowImageStoryGenerator(false);
+                setShowImageToImageGenerator(false);
               }}
             >
               📝 Text Stories
+            </button>
+            <button
+              className={`feature-tab ${showImageToImageGenerator ? 'active' : ''}`}
+              onClick={() => {
+                setShowImageToImageGenerator(true);
+                setShowTextStoryGenerator(false);
+                setShowMoodBasedGeneration(false);
+                setShowCollaborativeCanvas(false);
+                setShowImageStoryGenerator(false);
+              }}
+            >
+              🎨 Image Transform
             </button>
           </div>
 
@@ -493,6 +525,10 @@ const ImageGenerator: React.FC = () => {
           {/* Text Story Generator */}
           {showTextStoryGenerator && (
             <TextStoryGenerator onStoryGenerate={handleTextStoryGenerate} />
+          )}
+          {/* Image-to-Image Generator */}
+          {showImageToImageGenerator && (
+            <ImageToImageGenerator onImageGenerate={handleImageGenerate} />
           )}
 
           {/* Style Transfer Chain */}
