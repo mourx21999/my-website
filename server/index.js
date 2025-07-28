@@ -34,10 +34,7 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 
-// Serve static files from the React app build directory in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../build')));
-}
+// Static file serving removed - frontend deployed separately to Netlify
 
 app.post('/generate-image', async (req, res) => {
   const { prompt } = req.body;
@@ -361,12 +358,7 @@ app.post('/generate-story-title', async (req, res) => {
   }
 });
 
-// Catch-all handler: send back React's index.html file in production
-if (process.env.NODE_ENV === 'production') {
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../build', 'index.html'));
-  });
-}
+// Catch-all handler removed - frontend deployed separately to Netlify
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
