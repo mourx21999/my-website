@@ -94,7 +94,7 @@ const ImageToImageGenerator: React.FC<ImageToImageGeneratorProps> = ({ onImageGe
       console.log('🎨 Starting image-to-image generation...');
       
       // Convert base64 to blob for sending
-      const response = await fetch('/generate-image-to-image', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/generate-image-to-image`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

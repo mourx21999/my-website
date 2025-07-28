@@ -18,9 +18,13 @@ const allowedOrigins = [
   'http://localhost:3005', 
   'http://localhost:3000',
   'http://100.115.92.200:5001',
-  // Production domains will be added after deployment
-  /https:\/\/.*\.onrender\.com$/
-];
+  // Production domains for frontend deployment
+  /https:\/\/.*\.netlify\.app$/,
+  /https:\/\/.*\.vercel\.app$/,
+  /https:\/\/.*\.onrender\.com$/,
+  // Custom domains (will be updated with actual domain)
+  process.env.FRONTEND_URL
+].filter(Boolean);
 
 app.use(cors({
   origin: allowedOrigins,

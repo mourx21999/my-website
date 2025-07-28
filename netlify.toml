@@ -1,0 +1,24 @@
+[build]
+  # Build command for React app
+  command = "npm run build"
+  # Directory to publish
+  publish = "build"
+
+[build.environment]
+  # Node.js version
+  NODE_VERSION = "18"
+
+# SPA routing - redirect all requests to index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# API proxying (not needed since we're using separate backend)
+# but keeping for reference
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"

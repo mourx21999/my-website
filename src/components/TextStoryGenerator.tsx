@@ -135,7 +135,7 @@ Write only the chapter content, no extra formatting.`;
         try {
           console.log(`📡 Generating chapter ${i + 1}...`);
           
-          const response = await fetch('/generate-story-chapter', {
+          const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/generate-story-chapter`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -185,7 +185,7 @@ Write only the chapter content, no extra formatting.`;
         try {
           const titlePrompt = `Create a compelling ${selectedGenre} title for a ${selectedMood.toLowerCase()} story about: ${description}. Characters: ${characters.map(c => c.name).join(', ')}. Return only the title.`;
           
-          const titleResponse = await fetch('/generate-story-title', {
+          const titleResponse = await fetch(`${process.env.REACT_APP_API_URL || ''}/generate-story-title`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

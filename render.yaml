@@ -1,11 +1,17 @@
 services:
   - type: web
-    name: my-website
+    name: ai-image-generator-api
     env: node
-    buildCommand: npm install && npm run build && cd server && npm install --production
-    startCommand: cd server && npm start
+    region: oregon
+    plan: free
+    buildCommand: cd server && npm install --production
+    startCommand: cd server && node index.js
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 5001
+      - key: FRONTEND_URL
+        sync: false
       - key: HUGGING_FACE_TOKEN
         sync: false 

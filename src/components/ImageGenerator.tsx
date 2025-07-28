@@ -82,7 +82,7 @@ const ImageGenerator: React.FC = () => {
     setError('');
 
     try {
-      const endpoint = 'http://localhost:5001/generate-image';
+      const endpoint = `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/generate-image`;
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
