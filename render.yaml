@@ -4,13 +4,11 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: cd server && npm install --production
+    buildCommand: cd server && npm install
     startCommand: cd server && node index.js
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 5001
       - key: FRONTEND_URL
         sync: false
       - key: HUGGING_FACE_TOKEN
