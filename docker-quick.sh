@@ -10,7 +10,7 @@ case "$1" in
         ;;
     "run")
         echo "🚀 Running container on http://localhost:3000..."
-        docker run -d --name my-website-container -p 3000:5001 my-website
+        docker run -d --name my-website-container -p 3000:5847 my-website
         ;;
     "stop")
         echo "⏹️  Stopping container..."

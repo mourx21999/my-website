@@ -12,7 +12,7 @@ def test_server():
     # Test 1: Health check
     try:
         print("\n1️⃣ Testing health endpoint...")
-        response = requests.get('http://localhost:5001/health')
+        response = requests.get('http://localhost:5847/health')
         if response.status_code == 200:
             print("✅ Health check passed!")
             print(f"   Response: {response.json()}")
@@ -38,7 +38,7 @@ def test_server():
         }
         
         response = requests.post(
-            'http://localhost:5001/generate-story-chapter',
+            'http://localhost:5847/generate-story-chapter',
             json=test_data,
             headers={'Content-Type': 'application/json'}
         )
@@ -66,7 +66,7 @@ def test_server():
         }
         
         response = requests.post(
-            'http://localhost:5001/generate-story-title',
+            'http://localhost:5847/generate-story-title',
             json=title_data,
             headers={'Content-Type': 'application/json'}
         )

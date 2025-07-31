@@ -4,7 +4,7 @@ module.exports = function(app) {
   app.use(
     ['/generate-image', '/generate-image-to-image', '/generate-story-chapter', '/generate-story-title', '/health'],
     createProxyMiddleware({
-      target: 'http://localhost:5001',
+      target: 'http://localhost:5847',
       changeOrigin: true,
       secure: false,
       logLevel: 'debug'

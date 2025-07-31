@@ -32,7 +32,7 @@ else
     echo "✅ OpenAI API Key found! Using GPT-4 Vision for story generation."
 fi
 
-echo "✨ Starting Advanced AI Story Generation Server on http://localhost:5001"
+echo "✨ Starting Advanced AI Story Generation Server on http://localhost:5847"
 echo "   Your frontend can now generate real AI stories!"
 echo "   Press Ctrl+C to stop the server"
 echo ""

@@ -85,8 +85,8 @@ This project is open source and available under the MIT License.
 ## **Your Image Generator is Working!** 🎉
 
 ### **Current Status:**
-- ✅ **Frontend**: Running on http://localhost:3005
-- ✅ **Backend**: Running on http://localhost:5001
+- ✅ **Frontend**: Running on http://localhost:3847
+- ✅ **Backend**: Running on http://localhost:5847
 - ✅ **Photo Search**: Working (Unsplash)
 - ❌ **AI Generation**: Requires setup (see below)
 

@@ -42,7 +42,7 @@ Set these on your hosting platform:
 ```
 NODE_ENV=production
 HUGGING_FACE_TOKEN=hf_your_token_here
-PORT=5001
+PORT=5847
 ```
 
 ## Build Process
@@ -57,7 +57,7 @@ The deployment script will:
 After deployment, update the CORS origins in `server/index.js`:
 ```javascript
 const allowedOrigins = [
-  'http://localhost:3005', 
+  'http://localhost:3847', 
   'http://localhost:3000',
   'https://your-production-domain.com'  // Add this
 ];
@@ -70,7 +70,7 @@ npm run build:prod
 npm run start:prod
 ```
 
-Visit `http://localhost:5001` to test the production build.
+Visit `http://localhost:5847` to test the production build.
 
 ## Troubleshooting
 

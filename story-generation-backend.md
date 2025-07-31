@@ -1,6 +1,6 @@
 # Backend Implementation for AI Story Generation
 
-To make the stories actually generate using AI, you need to add these endpoints to your backend server (at `http://localhost:5001`):
+To make the stories actually generate using AI, you need to add these endpoints to your backend server (at `http://localhost:5847`):
 
 ## Required Backend Endpoints
 

@@ -56,7 +56,7 @@ Transform your image generator from **photo search** to **true AI image generati
 > ```bash
 > # Hugging Face API Configuration
 > HUGGING_FACE_TOKEN=hf_abcd1234efgh5678ijkl9012mnop3456qrst7890
-> PORT=5001
+> PORT=5847
 > ```
 
 ### Step 4: Restart Your Server
@@ -72,7 +72,7 @@ cd /home/martinoliverroux/my-website
 ## 🧪 Test Your AI Setup
 
 ### Quick Test
-1. **Refresh your browser:** http://localhost:3005
+1. **Refresh your browser:** http://localhost:3847
 2. **Try these prompts:**
    - `"a futuristic city at sunset"`
    - `"abstract art with vibrant colors"`

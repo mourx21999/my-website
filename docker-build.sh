@@ -8,7 +8,7 @@ set -e  # Exit on any error
 # Configuration
 IMAGE_NAME="my-website"
 CONTAINER_NAME="my-website-container"
-PORT=5001
+PORT=5847
 LOCAL_PORT=3000
 
 # Colors for output

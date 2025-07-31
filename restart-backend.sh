@@ -8,4 +8,4 @@ nohup npm start > server.log 2>&1 &
 
 sleep 3
 echo "Checking if backend is running..."
-curl -s http://localhost:5001 > /dev/null && echo "✅ Backend is running on http://localhost:5001" || echo "❌ Backend failed to start" 
+curl -s http://localhost:5847 > /dev/null && echo "✅ Backend is running on http://localhost:5847" || echo "❌ Backend failed to start" 
