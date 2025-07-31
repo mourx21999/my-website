@@ -58,18 +58,8 @@ app.post('/generate-image', async (req, res) => {
   if (hfToken) {
     console.log('🔑 Found Hugging Face token, attempting AI generation...');
     
-    // Try multiple AI image generation services with authentication
+    // Use only the cheapest Hugging Face model to minimize costs
     const aiServices = [
-      {
-        name: 'Stable Diffusion XL Base',
-        url: 'https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0',
-        body: { inputs: prompt, options: { wait_for_model: true } }
-      },
-      {
-        name: 'Flux Dev',
-        url: 'https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-dev',
-        body: { inputs: prompt, options: { wait_for_model: true } }
-      },
       {
         name: 'Stable Diffusion v1.5',
         url: 'https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5',
