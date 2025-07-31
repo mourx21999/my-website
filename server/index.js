@@ -11,13 +11,13 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5847;
 
 // Configure CORS for both development and production
 const allowedOrigins = [
-  'http://localhost:3005', 
+  'http://localhost:3847', 
   'http://localhost:3000',
-  'http://100.115.92.200:5001',
+  'http://100.115.92.200:5847',
   // Production domains for frontend deployment
   /https:\/\/.*\.netlify\.app$/,
   /https:\/\/.*\.vercel\.app$/,
