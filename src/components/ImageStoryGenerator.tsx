@@ -191,7 +191,7 @@ Write only the chapter content, no extra formatting or titles.`;
           });
           
           // Call your AI API - replace with your actual endpoint
-          const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5847'}/generate-story-chapter`, {
+          const response = await fetch('/generate-story-chapter', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -265,7 +265,7 @@ Write only the chapter content, no extra formatting or titles.`;
         try {
           const titlePrompt = `Create a compelling ${selectedGenre} title for a ${selectedMood.toLowerCase()} story about: ${chapters.map(c => c.title).join(', ')}. Characters: ${characters.map(c => c.name).join(', ')}. Return only the title, no quotes or extra text.`;
           
-          const titleResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5847'}/generate-story-title`, {
+          const titleResponse = await fetch('/generate-story-title', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -344,7 +344,7 @@ Write only the chapter content, no extra formatting or titles.`;
   const testConnection = async () => {
     try {
       console.log('🔍 Testing backend connection...');
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5847'}/health`);
+      const response = await fetch('/health');
       
       if (response.ok) {
         const data = await response.json();
